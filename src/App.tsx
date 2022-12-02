@@ -1,39 +1,30 @@
 import { useState, useEffect } from 'react';
 import { getData } from './utils';
 import type { ItemData } from './types';
-import Dashboard from './feature/dashboard';
+import Dashboard, { IIitems } from './feature/dashboard';
 
 function App() {
-    const [temperature, setTemperature] = useState<ItemData[]>([]);
-    const [precipitation, setPrecipitation] = useState<ItemData[]>([]);
+    const [data, setData] = useState<IIitems[]>([])
 
     useEffect(() => {
-        (async () => {
-            setTemperature(await getData<ItemData>('../data/temperature.json'));
-            setPrecipitation(await getData<ItemData>('../data/precipitation.json'));
-        })();
+        const request = [getData<ItemData>('../data/temperature.json'), getData<ItemData>('../data/precipitation.json')]
+        Promise.all(request).then(([temperature, precipitation]) => {
+            setData([
+                {
+                    label: 'Температура',
+                    list: temperature,
+                    id: 'temperature'
+                },
+                {
+                    label: 'Осадки',
+                    list: precipitation,
+                    id: 'precipitation'
+                },
+            ])
+        })
     }, []);
 
-    return (
-        <div>
-            <div>
-                Temperature data length: {temperature.length}
-                <details>
-                    <summary>Temperature</summary>
-                    {JSON.stringify(temperature)}
-                </details>
-            </div>
-            <br />
-            <div>
-                Precipitation data length: {precipitation.length}
-                <details>
-                    <summary>Precipitation</summary>
-                    {JSON.stringify(precipitation)}
-                </details>
-            </div>
-            <Dashboard label='Архив метеослужбы'/>
-        </div>
-    );
+    return  <Dashboard label='Архив метеослужбы' data={data} />
 }
 
 export default App;

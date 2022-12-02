@@ -1,21 +1,33 @@
 import classes from './select.module.scss';
 
-type Option = {
+export type SelectOption = {
     value: string
     title: string
 }
 
-interface ISelect {
-    options?: Option[]
-    onChange?: () => void
+export interface ISelect {
+    options?: SelectOption[]
+    onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+    value: SelectOption
+    name: string
 }
 
-const Select = ({ options = [], onChange }: ISelect) => {
+const Select = ({ value, options = [], onChange, name }: ISelect) => {
+
     return (
-        <select name="select" className={classes.Select} onChange={onChange}>
+        <select 
+            name={name} 
+            className={classes.Select} 
+            onChange={onChange}>
             {
-                options.map(({ value, title }) => (
-                    <option value={value} key={value}>{title}</option>
+                options.map((option) => (
+                    <option 
+                        selected={value.value === option.value} 
+                        value={option.value} 
+                        key={option.value}
+                    >
+                        {option.title}
+                    </option>
                 ))
             }
         </select>
