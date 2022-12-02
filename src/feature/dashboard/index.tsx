@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../../components/button';
 import RangeSelector from '../../components/rangeSelector';
 import { ItemData } from '../../types';
@@ -23,13 +23,17 @@ const Dashboard = ({ label, data, minYear = 1981, maxYear = 2006  }: IDashboard)
         end: { value: String(maxYear), title: String(maxYear)} 
     })
 
+    useEffect(() => {
+        console.log('CHANGE')
+    }, [currentId, dateRange])
+
     return <div className={classes.Dashboard}>
         {label && <h1>{label}</h1>}
         <div className={classes.contentWrapper}>
             <div className={classes.buttonBlock}>
                 {
                     data.map(({ label, id }) => (
-                        <Button key={id}>{label}</Button>
+                        <Button disabled={currentId === id} onClick={() => setCurrentId(id)} key={id}>{label}</Button>
                     ))
                 }
             </div>
