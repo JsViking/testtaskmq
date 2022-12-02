@@ -1,0 +1,10 @@
+.Select {
+    position: relative;
+    border: 2px #808080 solid;
+    padding: 5px;
+    width: 100%;
+    &:focus {
+        border: 2px #808080 solid;
+    }
+    cursor: pointer;
+}

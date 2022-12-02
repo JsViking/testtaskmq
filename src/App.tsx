@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getData } from './utils';
 import type { ItemData } from './types';
+import Dashboard from './feature/dashboard';
 
 function App() {
     const [temperature, setTemperature] = useState<ItemData[]>([]);
@@ -30,6 +31,7 @@ function App() {
                     {JSON.stringify(precipitation)}
                 </details>
             </div>
+            <Dashboard label='Архив метеослужбы'/>
         </div>
     );
 }

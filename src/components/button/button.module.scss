@@ -1,0 +1,11 @@
+.Button {
+    position: relative;
+    padding: 15px;
+    background-color: #808080;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+    &:hover {
+        opacity: 0.9;
+    }
+}

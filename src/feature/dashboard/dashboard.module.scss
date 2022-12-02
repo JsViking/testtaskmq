@@ -1,0 +1,27 @@
+@mixin baseFlex {
+    position: relative;
+    display: flex;
+    gap: 10px;
+}
+
+.Dashboard {
+    position: relative;
+    margin: 20px;
+    .contentWrapper {
+        position: relative;
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 10px;
+        .buttonBlock {
+            @include baseFlex;
+            flex-direction: column;
+        }
+    }
+    .content {
+        @include baseFlex;
+        flex-direction: column;
+    }
+    .selectBlock {
+        @include baseFlex;
+    }
+}
