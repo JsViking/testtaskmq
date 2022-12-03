@@ -11,6 +11,8 @@ export interface IConfig {
     label: string
     id: string
     request: () => void
+    rows: string[]
+    zeroPoint: number
 }
 export interface IDashboard {
     label?: string
@@ -53,10 +55,6 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
         getData()
     }, [currentData, dateRange])
 
-    useEffect(() => {
-        console.log('RENDER', list)
-    }, [list])
-
     return <div className={classes.Dashboard}>
         {label && <h1>{label}</h1>}
         <div className={classes.contentWrapper}>
@@ -83,7 +81,7 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
                         onChange={(e) => setDateRange(e)}
                     />
                 </div>
-                <Chart />
+                <Chart data={list} rows={currentData.rows} zeroPoint={currentData.zeroPoint} />
             </div>
         </div>
     </div>
