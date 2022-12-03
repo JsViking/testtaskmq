@@ -18,11 +18,12 @@ const Select = ({ value, options = [], onChange, name }: ISelect) => {
         <select 
             name={name} 
             className={classes.Select} 
-            onChange={onChange}>
+            onChange={onChange}
+            value={value.value}
+        >
             {
                 options.map((option) => (
                     <option 
-                        selected={value.value === option.value} 
                         value={option.value} 
                         key={option.value}
                     >

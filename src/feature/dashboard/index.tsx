@@ -30,24 +30,31 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
         if (!currentData || !dateRange) return
         async function getData() {
             const db = new IndexDb({
-                name: 'meteo',
-                storeName: currentData.id,
+                name: currentData.id,
+                storeName: 'meteo',
                 keyPath: 'id'
             })
+            await db.init()
             const start = new Date(dateRange.start.value).getTime()
             const end = new Date(dateRange.end.value).getTime()
-            const result = db.getRange(start, end) as unknown as ItemData[] | undefined
-            if (result) {
+            const result = await db.getRange<ItemData[] | undefined>(start, end)
+            // если в бд есть данные рендерим оттуда
+            if (result?.length) {
                 setList(result)
+            // в противном случае делаем запрос рендерим из запрошенных данных, в фоне записываем полученные данны в БД
             } else {
                 const res = await currentData.request()
                 const sliceData = getDataFromList(res as unknown as ItemData[], dateRange.start.value, dateRange.end.value, 't')
                 setList(sliceData)
-
+                db.addSome<ItemData>(res as unknown as ItemData[], (el) => new Date(el.t).getTime())
             }
         }
         getData()
     }, [currentData, dateRange])
+
+    useEffect(() => {
+        console.log('RENDER', list)
+    }, [list])
 
     return <div className={classes.Dashboard}>
         {label && <h1>{label}</h1>}
