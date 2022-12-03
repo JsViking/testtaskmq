@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Button from '../../components/button';
+import Chart from '../../components/chart';
 import RangeSelector from '../../components/rangeSelector';
 import { IndexDb } from '../../libs/indexDB';
 import { ItemData } from '../../types';
@@ -82,9 +83,7 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
                         onChange={(e) => setDateRange(e)}
                     />
                 </div>
-                <div className={classes.canvasWrapper}>
-
-                </div>
+                <Chart />
             </div>
         </div>
     </div>

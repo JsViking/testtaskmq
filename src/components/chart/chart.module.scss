@@ -1,0 +1,10 @@
+.Chart {
+    position: relative;
+    display: flex;
+    background-color: var(--main-white-color);
+    border: 2px var(--main-grey-color) solid;
+    canvas {
+        position: relative;
+        width: 100%;
+    }
+}

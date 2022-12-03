@@ -1,8 +1,8 @@
 .Button {
     position: relative;
     padding: 15px;
-    background-color: #808080;
-    color: #FFFFFF;
+    background-color: var(--main-grey-color);
+    color: var(--main-white-color);
     text-align: center;
     cursor: pointer;
     &:hover {
