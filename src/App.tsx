@@ -8,7 +8,7 @@ const config = [
         id: 'temperature',
         request: () => getData<ItemData>('../data/temperature.json'),
         rows: ['-40', '-30', '-20', '-10', '0', '10', '20', '30', '40'],
-        rowsCount: 5
+        rowsCount: 7
     },
     {
         label: 'Осадки',
