@@ -21,6 +21,7 @@ export interface IDashboard {
 }
 
 const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboard) => {
+    const [initializationDB, setInitializationDB] = useState(false)
     const [list, setList] = useState<ItemData[]>([])
     const [currentData, setCurrentData] = useState(config[0])
     const [dateRange, setDateRange] = useState({ 
@@ -37,9 +38,11 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
                 keyPath: 'id'
             })
             await db.init()
+
             const start = new Date(dateRange.start.value).getTime()
             const end = new Date(dateRange.end.value + '-12-30').getTime()
-            const result = await db.getRange<ItemData[] | undefined>(start, end)
+            const result = initializationDB ? null : await db.getRange<ItemData[] | undefined>(start, end)
+
             // если в бд есть данные рендерим оттуда
             if (result?.length) {
                 setList(result)
@@ -48,7 +51,12 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
                 const res = await currentData.request()
                 const sliceData = getDataFromList(res as unknown as ItemData[], dateRange.start.value, dateRange.end.value, 't')
                 setList(sliceData)
-                db.addSome<ItemData>(res as unknown as ItemData[], (el) => new Date(el.t).getTime())
+
+                // Если уже происходит запись в БД останавливаемся и  используем данные из АПИ
+                if (!initializationDB) {
+                    setInitializationDB(true)
+                    db.addSome<ItemData>(res as unknown as ItemData[], (el) => new Date(el.t).getTime(), () => setInitializationDB(false))
+                }
             }
         }
         getData()

@@ -61,27 +61,33 @@ export class IndexDb {
     }
 
     // Добавление массива данных в БД
-    public addSome<T>(array: T[], setId: (elem: T) => string | number) {
-        return new Promise(async(resolve, reject) => {
-            if (!this.db) return
-            const transaction = this.db.transaction(this.storeName, "readwrite");
-            const store = transaction.objectStore(this.storeName);
+    public async addSome<T>(array: T[], setId: (elem: T) => string | number, cb: () => void) {
+        if (!this.db) return
+        const iterationsPerChunk = 1000;
 
-            for (let i = 0; i < array.length; i++) {
-                const elem = array[i]
-                store.add({
-                    ...elem,
-                    id: setId(elem)
-                })
-            }
+        let transaction = this.db.transaction(this.storeName, "readwrite");
+        let store = transaction.objectStore(this.storeName);
 
-            transaction.oncomplete = function() {
-                resolve(true)
-            };
-            transaction.onerror = function(err) {
-                reject(err)
+        for (let i = 0; i < array.length; i++) {
+            // Каждую "iterationsPerChunk" записей прерываем цикл и транзакцию, чтобы не фризить рендер.
+            if (i && i % iterationsPerChunk === 0) {
+                await oneMoment();
+                transaction = this.db.transaction(this.storeName, "readwrite");
+                store = transaction.objectStore(this.storeName);
             }
-        })
+            const elem = array[i]
+            store.add({
+                ...elem,
+                id: setId(elem)
+            })
+        }
+
+        transaction.oncomplete = function() {
+            if (cb) cb()
+        };
+        transaction.onerror = function(err) {
+            console.error(err)
+        }
     }
     // Взять одну запись из БД
     public getOne(name: string | number) {
