@@ -27,3 +27,17 @@ export function getDataFromList<T , A, >(array: T[], start: A, end: A, key: keyo
 export function oneMoment() {
     return new Promise(resolve => setTimeout(resolve));
 }
+
+export function computeBoundaries<T>(data: T[], key: keyof T) {
+    let min = 0;
+    let max = 0;
+
+    for (const item of data) {
+        const el = item[key]
+
+        min = Math.min(min, Number(el))
+        max = Math.max(max, Number(el))
+    }
+
+    return [min, max]
+}

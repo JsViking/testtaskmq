@@ -27,6 +27,10 @@ const RangeSelector = ({ start, end, minYear, maxYear, onChange }: Props) => {
     const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         if (!onChange) return
         const { name, value } =  e.target
+
+        if (name === 'start' && new Date(value).getTime() > new Date(end.value).getTime()) return
+        if (name === 'end' && new Date(value).getTime() < new Date(start.value).getTime()) return
+
         const obj = {
             [name]: options.find((option) => value === option.value)
         }

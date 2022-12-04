@@ -11,8 +11,7 @@ export interface IConfig {
     label: string
     id: string
     request: () => void
-    rows: string[]
-    zeroPoint: number
+    rowsCount: number
 }
 export interface IDashboard {
     label?: string
@@ -81,7 +80,7 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
                         onChange={(e) => setDateRange(e)}
                     />
                 </div>
-                <Chart data={list} rows={currentData.rows} zeroPoint={currentData.zeroPoint} />
+                <Chart data={list} rowsCount={currentData.rowsCount} />
             </div>
         </div>
     </div>

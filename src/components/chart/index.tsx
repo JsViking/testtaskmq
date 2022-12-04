@@ -1,42 +1,48 @@
 import classes from './chart.module.scss';
 import { useEffect, useRef } from 'react';
 import { ItemData } from '../../types';
+import { computeBoundaries } from '../../utils';
 
 const WIDTH = 600;
 const HEIGHT = 400;
 const DPI_WIDTH = WIDTH * 2;
 const DPI_HEIGHT = HEIGHT * 2;
-const PADDING = 20;
+const PADDING = 40;
 const VIEW_HEIGHT = DPI_HEIGHT - PADDING * 2
 
 interface IRender extends IChart {
     canvas: HTMLCanvasElement
 }
 
-function render({canvas, data, rows, zeroPoint}: IRender) {
-    // Определяем количество строк в сетке
-    const ROWS_COUNT = rows.length
-    // Определяем размер шага в сетке
-    const ROW_STEP = VIEW_HEIGHT / ROWS_COUNT
-    // Определяем нулевой ряд
-    const ZERO_LINE = ROW_STEP * zeroPoint
-
+function render({canvas, data, rowsCount = 6}: IRender) {
     const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error("Canvas context did't init");
-    
+    if (!ctx) throw new Error("Canvas context didn't init");
     canvas.style.width = WIDTH + 'px';
     canvas.style.height = HEIGHT + 'px';
     canvas.width = DPI_WIDTH;
     canvas.height = DPI_HEIGHT;
+
+    // Определяем количество строк в сетке
+
+
+    // Установка пороговых значений для полученных данных по координате y
+    const [yMin, yMax] = computeBoundaries(data, 'v');
+    const yRatio = VIEW_HEIGHT / (yMax - yMin)
+
+    // Определяем размер шага в сетке
+    const rowStep = VIEW_HEIGHT / rowsCount
+    // Определяем шаг для текста относительно медианы минимума и максимума
+    const textStep = (yMax - yMin) / rowsCount
 
     // Рисуем сетку диаграммы
     ctx.beginPath();
     ctx.strokeStyle = '#808080';
     ctx.font = 'normal 20px sans-serif';
     ctx.fillStyle = 'lightgrey';
-    for (let i = 1; i <= ROWS_COUNT; i++) {
-        const y = ROW_STEP * i;
-        ctx?.fillText(rows[i - 1], 5, DPI_HEIGHT - (y - ROW_STEP + PADDING + 10))
+    for (let i = 1; i <= rowsCount; i++) {
+        const y = rowStep * i;
+        const text = Math.round(yMax - textStep * i)
+        ctx?.fillText(String(text), 5, y + PADDING - 10)
         ctx?.moveTo(0, y + PADDING);
         ctx?.lineTo(DPI_WIDTH, y + PADDING)
     };
@@ -46,7 +52,6 @@ function render({canvas, data, rows, zeroPoint}: IRender) {
     // Рисуем диаграмму
     if (!data?.length) return
     const lineStep = DPI_WIDTH / data.length 
-    console.log('lineStep', lineStep)
     ctx.beginPath();
     ctx.lineWidth = 3;
     ctx.strokeStyle = 'green';
@@ -54,7 +59,7 @@ function render({canvas, data, rows, zeroPoint}: IRender) {
         const item = data[i]
         const x = i * lineStep
         const y = item.v
-        ctx.lineTo(x, DPI_HEIGHT - ZERO_LINE - PADDING - y)
+        ctx.lineTo(x, DPI_HEIGHT - PADDING - y * yRatio)
     }
     ctx.stroke();
     ctx.closePath();
@@ -62,19 +67,17 @@ function render({canvas, data, rows, zeroPoint}: IRender) {
 
 interface IChart {
     data: ItemData[]
-    rows: string[]
-    zeroPoint: number
+    rowsCount?: number
 }
 
-const Chart = ({ data, rows, zeroPoint }: IChart) => {
+const Chart = ({ data, rowsCount }: IChart) => {
     const chartRef = useRef(null)
     useEffect(() => {
         if (!chartRef?.current) return;
         render({
             canvas: chartRef.current,
             data,
-            rows,
-            zeroPoint
+            rowsCount,
         });
     }, [data])
 
