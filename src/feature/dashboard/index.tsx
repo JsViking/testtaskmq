@@ -39,7 +39,7 @@ const Dashboard = ({ label, config, minYear = 1881, maxYear = 2006  }: IDashboar
             })
             await db.init()
             const start = new Date(dateRange.start.value).getTime()
-            const end = new Date(dateRange.end.value).getTime()
+            const end = new Date(dateRange.end.value + '-12-30').getTime()
             const result = await db.getRange<ItemData[] | undefined>(start, end)
             // если в бд есть данные рендерим оттуда
             if (result?.length) {
